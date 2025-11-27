@@ -181,23 +181,23 @@ impl MainView {
                 if timer_running.load(Ordering::Relaxed) {
                     let time = event.time - *now.borrow();
                     if time > 120_000 {
-                        let name = GHOSTS[9].to_string();
-                        states.borrow_mut().insert(name, GhostState::Off);
+                        states.borrow_mut().insert(GHOSTS[9].to_string(), GhostState::Off);
                         store.items_changed(9 as u32, 1, 1);
+                        store.splice(9 as u32, 1, &[StringObject::new(GHOSTS[9])]);
                     }
 
                     if time > 240_000 {
-                        for (index, _) in GHOSTS.iter().enumerate() {
+                        for (index, name) in GHOSTS.iter().enumerate() {
                             match index {
                                 0 | 8 => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Default);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Default);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                                 _ => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Off);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                             }
                         }
@@ -229,17 +229,17 @@ impl MainView {
                                 .as_millis();
 
                             if n - *now.borrow() < 120_000 {
-                                for (index, _) in GHOSTS.iter().enumerate() {
+                                for (index, name) in GHOSTS.iter().enumerate() {
                                     match index {
                                         9 => {
-                                            let name = GHOSTS[index].to_string();
-                                            states.borrow_mut().insert(name, GhostState::On);
+                                            states.borrow_mut().insert(name.to_string(), GhostState::On);
                                             store.items_changed(index as u32, 1, 1);
+                                            store.splice(index as u32, 1, &[StringObject::new(name)]);
                                         }
                                         _ => {
-                                            let name = GHOSTS[index].to_string();
-                                            states.borrow_mut().insert(name, GhostState::Off);
+                                            states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                             store.items_changed(index as u32, 1, 1);
+                                            store.splice(index as u32, 1, &[StringObject::new(name)]);
                                         }
                                     }
                                 }
@@ -257,76 +257,76 @@ impl MainView {
                         status.set_label(&format!("{} • {}", status.label().as_str().split(" • ").next().unwrap(), "No Timer"));
                     }
                     Key::BackQuote => {
-                        for (index, _) in GHOSTS.iter().enumerate() {
-                            let name = GHOSTS[index].to_string();
-                            states.borrow_mut().insert(name, GhostState::Default);
+                        for (index, name) in GHOSTS.iter().enumerate() {
+                            states.borrow_mut().insert(name.to_string(), GhostState::Default);
                             store.items_changed(index as u32, 1, 1);
+                            store.splice(index as u32, 1, &[StringObject::new(name)]);
                         }
                         status.set_label(&format!("{} • {}", "Clean", status.label().as_str().split(" • ").last().unwrap()));
                     }
                     Key::Num1 => {
-                        for (index, _) in GHOSTS.iter().enumerate() {
+                        for (index, name) in GHOSTS.iter().enumerate() {
                             match index {
                                 2 | 7 | 11 | 13 | 15 | 19 | 21 | 22 | 23 => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Off);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                                 _ => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Default);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Default);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                             }
                         }
                         status.set_label(&format!("{} • {}", "Normal", status.label().as_str().split(" • ").last().unwrap()));
                     }
                     Key::Num2 => {
-                        for (index, _) in GHOSTS.iter().enumerate() {
+                        for (index, name) in GHOSTS.iter().enumerate() {
                             match index {
                                 7 | 17 | 21 | 23 => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Default);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Default);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                                 _ => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Off);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                             }
                         }
                         status.set_label(&format!("{} • {}", "Fast", status.label().as_str().split(" • ").last().unwrap()));
                     }
                     Key::Num3 => {
-                        for (index, _) in GHOSTS.iter().enumerate() {
+                        for (index, name) in GHOSTS.iter().enumerate() {
                             match index {
                                 5 | 13 | 22 => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Default);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Default);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                                 _ => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Off);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                             }
                         }
                         status.set_label(&format!("{} • {}", "Slow", status.label().as_str().split(" • ").last().unwrap()));
                     }
                     Key::Num4 => {
-                        for (index, _) in GHOSTS.iter().enumerate() {
+                        for (index, name) in GHOSTS.iter().enumerate() {
                             match index {
                                 7 | 13 | 21 | 23 => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Default);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Default);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                                 _ => {
-                                    let name = GHOSTS[index].to_string();
-                                    states.borrow_mut().insert(name, GhostState::Off);
+                                    states.borrow_mut().insert(name.to_string(), GhostState::Off);
                                     store.items_changed(index as u32, 1, 1);
+                                    store.splice(index as u32, 1, &[StringObject::new(name)]);
                                 }
                             }
                         }
