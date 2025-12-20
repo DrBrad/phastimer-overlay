@@ -30,7 +30,7 @@ impl MainWindow {
 
         window.set_application(Some(app));
         window.connect_destroy(|_| exit(0));
-        //window.set_decorated(false);
+        window.set_decorated(false);
         //window.set_border_width(1);
 
 

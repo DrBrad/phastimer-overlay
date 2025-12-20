@@ -15,18 +15,10 @@
                 <property name="orientation">vertical</property>
 
                 <child>
-                    <object class="GtkGridView" id="ghosts_grid">
-                        <property name="halign">fill</property>
-                        <property name="hexpand">true</property>
-                        <property name="vexpand">true</property>
-                    </object>
-                </child>
-
-                <child>
-                    <object class="GtkLabel" id="status">
-                        <property name="name">status</property>
+                    <object class="GtkLabel" id="time">
+                        <property name="name">time</property>
                         <property name="visible">True</property>
-                        <property name="label">Clean • No Timer</property>
+                        <property name="label">00:00:00</property>
                     </object>
                 </child>
             </object>

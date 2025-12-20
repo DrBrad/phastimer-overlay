@@ -12,15 +12,8 @@ gridview child:selected {
 }
 */
 
-.ghost-default {
-    background-color: #aaaa00;
-}
-
-.ghost-off {
-    background-color: #aa0000;
-}
-
-.ghost-on {
-    background-color: #00aa00;
+#time {
+    font-weight: bold;
+    font-size: 50px;
 }
 

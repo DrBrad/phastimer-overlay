@@ -28,40 +28,6 @@ rustup override set nightly
 //LOS - NOT (Deogen, Hantu, Revenant, and Thaye)
 //
 
-pub const GHOSTS: [&str; 24] = [
-    "Spirit",
-    "Wraith",
-    "Phantom",
-    "Poltergeist",
-    "Banshee",
-    "Jinn",
-    "Mare",
-    "Revenant",
-    "Shade",
-    "Demon",
-    "Yurei",
-    "Oni",
-    "Yokai",
-    "Hantu",
-    "Goryo",
-    "Myling",
-    "Onryo",
-    "The Twins",
-    "Raiju",
-    "Obake",
-    "The Mimic",
-    "Moroi",
-    "Deogen",
-    "Thaye"
-];
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum GhostState {
-    Default,
-    On,
-    Off
-}
-
 
 fn main() {
     thread::spawn(|| {

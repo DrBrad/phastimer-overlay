@@ -4,11 +4,11 @@
 }
 
 window {
-    background-color: @background;
+    background-color: transparent;
 }
 
 #main_window {
-    background-color: @background;
+    background-color: transparent;
 }
 
 
