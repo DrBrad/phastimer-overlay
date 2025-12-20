@@ -31,6 +31,14 @@ rustup override set nightly
 //
 
 
+/*
+cargo build --release
+powershell -ExecutionPolicy Bypass -File tools\package.ps1
+
+$env:PATH="C:\Windows\System32;C:\Windows"
+Start-Process -FilePath .\target\release\smudge-timer.exe
+*/
+
 
 fn main() {
     thread::spawn(|| {
