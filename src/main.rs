@@ -1,3 +1,5 @@
+#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
+
 mod gtk4;
 mod bus;
 mod utils;
@@ -27,6 +29,7 @@ rustup override set nightly
 //SLOW - (Jinn, Deogen)
 //LOS - NOT (Deogen, Hantu, Revenant, and Thaye)
 //
+
 
 
 fn main() {

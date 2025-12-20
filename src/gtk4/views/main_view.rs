@@ -7,6 +7,7 @@ use crate::gtk4::windows::main_window::MainWindow;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::process::exit;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
@@ -67,7 +68,7 @@ impl MainView {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
                 match event.button {
-                    Key::Num1 => {
+                    Key::BackQuote => {
                         if timer_running.load(Ordering::Relaxed) {
                             timer_running.store(false, Ordering::Relaxed);
 
@@ -79,6 +80,9 @@ impl MainView {
                         .unwrap()
                         .as_millis();
                         timer_running.store(true, Ordering::Relaxed);
+                    }
+                    Key::Equal => {
+                        exit(0);
                     }
                     _ => {}
                 }
