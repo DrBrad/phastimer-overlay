@@ -61,6 +61,7 @@ impl MainView {
             let smudge_now = Rc::clone(&smudge_now);
             let obombo_timer_running = Rc::clone(&obombo_timer_running);
             let obombo_now = Rc::clone(&obombo_now);
+            let obombo_state = Rc::clone(&obombo_state);
             move |event| {
                 let event = event.as_any().downcast_ref::<TimerEvent>().unwrap();
 
@@ -111,6 +112,7 @@ impl MainView {
                     }
                     Key::Num3 => {
                         obombo_timer_running.store(false, Ordering::Relaxed);
+                        *obombo_state.borrow_mut() = false;
                         obombo.set_label("NONE");
                     }
                     Key::Num5 => {
@@ -118,6 +120,7 @@ impl MainView {
                         smudge.set_label("00:00");
 
                         obombo_timer_running.store(false, Ordering::Relaxed);
+                        *obombo_state.borrow_mut() = false;
                         obombo.set_label("NONE");
                     }
                     Key::Equal => {
