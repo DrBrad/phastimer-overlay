@@ -1,6 +1,4 @@
-#main_view {
-    border-left: solid 1px @background_secondary;
-}
+
 
 /*
 gridview child {
@@ -12,8 +10,15 @@ gridview child:selected {
 }
 */
 
-#time {
+#smudge {
     font-weight: bold;
     font-size: 50px;
+}
+
+#obombo {
+    text-align: left;
+    font-weight: bold;
+    font-size: 20px;
+    color: gold;
 }
 

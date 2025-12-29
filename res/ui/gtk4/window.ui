@@ -5,7 +5,7 @@
     <object class="GtkApplicationWindow" id="main_window">
         <property name="name">main_window</property>
         <property name="title">SmudgeTimer</property>
-        <property name="default_width">170</property>
+        <property name="default_width">135</property>
         <property name="default_height">40</property>
         <property name="can-focus">False</property>
 

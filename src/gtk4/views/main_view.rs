@@ -39,23 +39,44 @@ impl MainView {
             .expect("Couldn't find 'root' in main_view.ui");
 
 
-        let time: Label = builder
-            .object("time")
-            .expect("Couldn't find 'time' in main_view.ui");
+        let smudge: Label = builder
+            .object("smudge")
+            .expect("Couldn't find 'smudge' in main_view.ui");
+
+        let obombo: Label = builder
+            .object("obombo")
+            .expect("Couldn't find 'obombo' in main_view.ui");
 
 
-        let timer_running = Rc::new(AtomicBool::new(false));
-        let now = Rc::new(RefCell::new(0u128));
+        let smudge_timer_running = Rc::new(AtomicBool::new(false));
+        let obombo_timer_running = Rc::new(AtomicBool::new(false));
+        let smudge_now = Rc::new(RefCell::new(0u128));
+        let obombo_now = Rc::new(RefCell::new(0u128));
+        let mut obombo_state = Rc::new(RefCell::new(false));
 
         let timer_event_listener = Some(RefCell::new(register_event("timer_event", {
-            let time = time.clone();
-            let timer_running = Rc::clone(&timer_running);
-            let now = Rc::clone(&now);
+            let smudge = smudge.clone();
+            let obombo = obombo.clone();
+            let smudge_timer_running = Rc::clone(&smudge_timer_running);
+            let smudge_now = Rc::clone(&smudge_now);
+            let obombo_timer_running = Rc::clone(&obombo_timer_running);
+            let obombo_now = Rc::clone(&obombo_now);
+            let obombo_state = Rc::clone(&obombo_state);
             move |event| {
                 let event = event.as_any().downcast_ref::<TimerEvent>().unwrap();
 
-                if timer_running.load(Ordering::Relaxed) {
-                    time.set_label(&format!("{}", ms_to_hms(event.time - *now.borrow())));
+                if smudge_timer_running.load(Ordering::Relaxed) {
+                    smudge.set_label(&format!("{}", ms_to_hms(event.time - *smudge_now.borrow())));
+                }
+
+                if obombo_timer_running.load(Ordering::Relaxed) && (event.time - *obombo_now.borrow())/1000 % 120 == 0 {
+                    if *obombo_state.borrow() {
+                        *obombo_state.borrow_mut() = false;
+                        obombo.set_label("STATE 2");
+                    } else {
+                        *obombo_state.borrow_mut() = true;
+                        obombo.set_label("STATE 1");
+                    }
                 }
 
                 Continue
@@ -65,27 +86,42 @@ impl MainView {
 
 
         let button_event_listener = Some(RefCell::new(register_event("button_event", {
-            let time = time.clone();
+            let smudge = smudge.clone();
+            let obombo = obombo.clone();
             move |event| {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
                 match event.button {
                     Key::BackQuote => {
-                        if timer_running.load(Ordering::Relaxed) {
-                            timer_running.store(false, Ordering::Relaxed);
-
-                            return Continue;
-                        }
-
-                        *now.borrow_mut() = SystemTime::now()
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap()
-                        .as_millis();
-                        timer_running.store(true, Ordering::Relaxed);
+                        *smudge_now.borrow_mut() = SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_millis();
+                        smudge_timer_running.store(true, Ordering::Relaxed);
                     }
                     Key::Num1 => {
-                        timer_running.store(false, Ordering::Relaxed);
-                        time.set_label("00:00:00");
+                        smudge_timer_running.store(false, Ordering::Relaxed);
+                        smudge.set_label("00:00");
+                    }
+                    Key::Num2 => {
+                        *obombo_now.borrow_mut() = SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_millis();
+                        obombo_timer_running.store(true, Ordering::Relaxed);
+                    }
+                    Key::Num3 => {
+                        obombo_timer_running.store(false, Ordering::Relaxed);
+                        *obombo_state.borrow_mut() = false;
+                        obombo.set_label("NONE");
+                    }
+                    Key::Num5 => {
+                        smudge_timer_running.store(false, Ordering::Relaxed);
+                        smudge.set_label("00:00");
+
+                        obombo_timer_running.store(false, Ordering::Relaxed);
+                        *obombo_state.borrow_mut() = false;
+                        obombo.set_label("NONE");
                     }
                     Key::Equal => {
                         exit(0);
@@ -147,9 +183,8 @@ impl Stackable for MainView {
 
 fn ms_to_hms(ms: u128) -> String {
     let total_seconds = ms / 1000;
-    let hours = total_seconds / 3600;
     let minutes = (total_seconds % 3600) / 60;
     let seconds = total_seconds % 60;
 
-    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
+    format!("{:02}:{:02}", minutes, seconds)
 }

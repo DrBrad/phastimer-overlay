@@ -40,6 +40,7 @@ Start-Process -FilePath .\target\release\smudge-timer.exe
 */
 
 
+
 fn main() {
     thread::spawn(|| {
         if let Err(err) = listen(|event| {

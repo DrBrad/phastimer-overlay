@@ -4,11 +4,13 @@
 }
 
 window {
+    border: none;
     background-color: transparent;
+    border-bottom-right-radius: 15px;
 }
 
 #main_window {
-    background-color: transparent;
+    background-color: #00000080;
 }
 
 

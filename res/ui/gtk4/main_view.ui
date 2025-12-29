@@ -15,10 +15,18 @@
                 <property name="orientation">vertical</property>
 
                 <child>
-                    <object class="GtkLabel" id="time">
-                        <property name="name">time</property>
+                    <object class="GtkLabel" id="smudge">
+                        <property name="name">smudge</property>
                         <property name="visible">True</property>
-                        <property name="label">00:00:00</property>
+                        <property name="label">00:00</property>
+                    </object>
+                </child>
+
+                <child>
+                    <object class="GtkLabel" id="obombo">
+                        <property name="name">obombo</property>
+                        <property name="visible">True</property>
+                        <property name="label">NONE</property>
                     </object>
                 </child>
             </object>
