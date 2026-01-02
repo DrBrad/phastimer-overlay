@@ -12,5 +12,6 @@ KeyBinds:
 | 1    | Reset smudge timer |
 | 2    | Starts / Restarts Obambo timer |
 | 3    | Reset Obambo timer |
+| 4    | BPS = Footsteps per second |
 | 5    | Reset smudge and Obambo timer |
 | =    | Kills the program |

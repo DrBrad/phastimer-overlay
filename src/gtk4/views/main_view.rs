@@ -5,13 +5,13 @@ use gtk4::prelude::{BoxExt, Cast, EventControllerExt, GestureSingleExt, ListItem
 use crate::gtk4::views::inter::stackable::Stackable;
 use crate::gtk4::windows::main_window::MainWindow;
 
-use std::cell::RefCell;
-use std::collections::HashMap;
+use std::cell::{Cell, RefCell};
+use std::collections::{HashMap, VecDeque};
 use std::process::exit;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use rdev::{listen, EventType, Key};
 use crate::bus::event_bus::{pause_event, register_event, resume_event, unregister_event};
 use crate::bus::event_bus::EventPropagation::Continue;
@@ -46,6 +46,10 @@ impl MainView {
         let obombo: Label = builder
             .object("obombo")
             .expect("Couldn't find 'obombo' in main_view.ui");
+
+        let bps: Label = builder
+            .object("bps")
+            .expect("Couldn't find 'bps' in main_view.ui");
 
 
         let smudge_timer_running = Rc::new(AtomicBool::new(false));
@@ -93,6 +97,10 @@ impl MainView {
         let button_event_listener = Some(RefCell::new(register_event("button_event", {
             let smudge = smudge.clone();
             let obombo = obombo.clone();
+
+            let beats: RefCell<VecDeque<Instant>> = RefCell::new(VecDeque::new());
+            let last_event: RefCell<Option<Instant>> = RefCell::new(None);
+
             move |event| {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
@@ -127,6 +135,43 @@ impl MainView {
                         obombo_timer_running.store(false, Ordering::Relaxed);
                         *obombo_state.borrow_mut() = true;
                         obombo.set_label("NONE");
+
+                        bps.set_label("0.00 BPS");
+                    }
+                    Key::Num4 => {
+                        let now = Instant::now();
+
+                        {
+                            let mut last = last_event.borrow_mut();
+                            if let Some(prev) = *last {
+                                if now.duration_since(prev) > Duration::from_secs(3) {
+                                    beats.borrow_mut().clear();
+                                }
+                            }
+                            *last = Some(now);
+                        }
+
+                        let mut q = beats.borrow_mut();
+                        q.push_back(now);
+
+                        let cutoff = now - Duration::from_secs(1);
+                        while q.front().is_some_and(|t| *t < cutoff) {
+                            q.pop_front();
+                        }
+
+                        let bps_v = if q.len() >= 2 {
+                            let elapsed = q.back().unwrap().duration_since(*q.front().unwrap())
+                                .as_secs_f64();
+                            if elapsed > 0.0 {
+                                (q.len() as f64 - 1.0) / elapsed
+                            } else {
+                                0.0
+                            }
+                        } else {
+                            0.0
+                        };
+
+                        bps.set_label(&format!("{:.2} BPS", bps_v));
                     }
                     Key::Equal => {
                         exit(0);
@@ -184,6 +229,14 @@ impl Stackable for MainView {
             unregister_event("timer_event", *timer_event_listener.borrow());
         }
     }
+}
+
+#[derive(Default)]
+struct BeatState {
+    last_1s: VecDeque<Instant>,
+    last_5s: VecDeque<Instant>,
+    last_press: Option<Instant>,
+    ema_bps: f64,
 }
 
 fn ms_to_hms(ms: u128) -> String {

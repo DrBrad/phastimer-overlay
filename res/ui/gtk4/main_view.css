@@ -16,9 +16,14 @@ gridview child:selected {
 }
 
 #obombo {
-    text-align: left;
     font-weight: bold;
     font-size: 20px;
     color: gold;
+}
+
+#bps {
+    font-weight: bold;
+    font-size: 20px;
+    color: mediumspringgreen;
 }
 
