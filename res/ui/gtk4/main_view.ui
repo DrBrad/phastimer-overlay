@@ -34,7 +34,7 @@
                     <object class="GtkLabel" id="bps">
                         <property name="name">bps</property>
                         <property name="visible">True</property>
-                        <property name="label">0.00 BPS</property>
+                        <property name="label">0.00 m/s</property>
                     </object>
                 </child>
             </object>

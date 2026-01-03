@@ -7,6 +7,7 @@ use crate::gtk4::windows::main_window::MainWindow;
 
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, VecDeque};
+use std::fmt::format;
 use std::process::exit;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -17,6 +18,7 @@ use crate::bus::event_bus::{pause_event, register_event, resume_event, unregiste
 use crate::bus::event_bus::EventPropagation::Continue;
 use crate::bus::events::button_event::ButtonEvent;
 use crate::bus::events::timer_event::TimerEvent;
+use crate::utils::bpm::TapState;
 
 pub struct MainView {
     pub root: gtk4::Box,
@@ -93,13 +95,11 @@ impl MainView {
         }, true)));
         resume_event("timer_event", timer_event_listener.as_ref().unwrap().borrow().clone());
 
-
         let button_event_listener = Some(RefCell::new(register_event("button_event", {
             let smudge = smudge.clone();
             let obombo = obombo.clone();
 
-            let beats: RefCell<VecDeque<Instant>> = RefCell::new(VecDeque::new());
-            let last_event: RefCell<Option<Instant>> = RefCell::new(None);
+            let tap_state = RefCell::new(TapState::default());
 
             move |event| {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
@@ -136,42 +136,15 @@ impl MainView {
                         *obombo_state.borrow_mut() = true;
                         obombo.set_label("NONE");
 
-                        bps.set_label("0.00 BPS");
+                        bps.set_label("0.00 m/s");
                     }
                     Key::Num4 => {
-                        let now = Instant::now();
+                        if let Some((bpm, ms)) = tap_state.borrow_mut().tap_and_compute() {
+                            bps.set_label(&format!("{ms:.2} m/s"));
 
-                        {
-                            let mut last = last_event.borrow_mut();
-                            if let Some(prev) = *last {
-                                if now.duration_since(prev) > Duration::from_secs(3) {
-                                    beats.borrow_mut().clear();
-                                }
-                            }
-                            *last = Some(now);
-                        }
-
-                        let mut q = beats.borrow_mut();
-                        q.push_back(now);
-
-                        let cutoff = now - Duration::from_secs(1);
-                        while q.front().is_some_and(|t| *t < cutoff) {
-                            q.pop_front();
-                        }
-
-                        let bps_v = if q.len() >= 2 {
-                            let elapsed = q.back().unwrap().duration_since(*q.front().unwrap())
-                                .as_secs_f64();
-                            if elapsed > 0.0 {
-                                (q.len() as f64 - 1.0) / elapsed
-                            } else {
-                                0.0
-                            }
                         } else {
-                            0.0
-                        };
-
-                        bps.set_label(&format!("{:.2} BPS", bps_v));
+                            bps.set_label("0.00 m/s");
+                        }
                     }
                     Key::Equal => {
                         exit(0);
