@@ -11,5 +11,8 @@
         <file alias="res/ui/main_view.ui" preprocess="xml-stripblanks">res/ui/gtk4/main_view.ui</file>
         <file alias="res/ui/main_view.css">res/ui/gtk4/main_view.css</file>
 
+        <file alias="res/ui/console_view.ui" preprocess="xml-stripblanks">res/ui/gtk4/console_view.ui</file>
+        <file alias="res/ui/console_view.css">res/ui/gtk4/console_view.css</file>
+
     </gresource>
 </gresources>

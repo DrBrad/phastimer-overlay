@@ -18,6 +18,7 @@ use crate::bus::event_bus::{pause_event, register_event, resume_event, unregiste
 use crate::bus::event_bus::EventPropagation::Continue;
 use crate::bus::events::button_event::ButtonEvent;
 use crate::bus::events::timer_event::TimerEvent;
+use crate::gtk4::windows::console_window::ConsoleWindow;
 use crate::utils::bpm::TapState;
 
 pub struct MainView {
@@ -106,6 +107,10 @@ impl MainView {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
                 match event.button {
+                    Key::BackSlash => {
+                        //CONSOLE
+                        ConsoleWindow::new();
+                    }
                     Key::BackQuote => {
                         *smudge_now.borrow_mut() = SystemTime::now()
                             .duration_since(UNIX_EPOCH)
