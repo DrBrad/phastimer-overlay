@@ -6,14 +6,13 @@ mod utils;
 
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use rdev::{listen, EventType};
+use rdev::{listen, EventType, Key};
 use crate::bus::event_bus::send_event;
 use crate::bus::events::button_event::ButtonEvent;
 use crate::bus::events::inter::event::Event;
 use crate::bus::events::timer_event::TimerEvent;
 use crate::gtk4::app::App;
-
-
+use crate::gtk4::windows::console_window::ConsoleWindow;
 //export GTK_DEBUG=interactive
 
 //glib-compile-resources res/gtk4/linux.gresources.xml --target=res/resources.gresources
@@ -47,7 +46,9 @@ fn main() {
             match event.event_type {
                 EventType::KeyPress(_) => {}
                 EventType::KeyRelease(key) => {
-                    send_event(Box::new(ButtonEvent::new(key)));
+                    match key {
+                        _ => send_event(Box::new(ButtonEvent::new(key)))
+                    }
                 }
                 EventType::ButtonPress(_) => {}
                 EventType::ButtonRelease(_) => {}

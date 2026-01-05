@@ -78,7 +78,6 @@ impl MainView {
                 }
 
                 let elapsed = (event.time - *obombo_now.borrow())/10;
-                println!("{elapsed}  {}   {}", event.time, *obombo_now.borrow());
 
                 if obombo_timer_running.load(Ordering::Relaxed) {
                     if elapsed < 6000 {
@@ -107,8 +106,7 @@ impl MainView {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
                 match event.button {
-                    Key::BackSlash => {
-                        //CONSOLE
+                    Key::ControlRight => {
                         ConsoleWindow::new();
                     }
                     Key::BackQuote => {
