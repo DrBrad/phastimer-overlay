@@ -37,16 +37,6 @@ impl App {
 
             //provider.load_from_resource("/smudgetimer/rust/res/ui/theme.css");
 
-            #[cfg(target_os = "macos")]
-            {
-                let builder = Builder::from_resource("/smudgetimer/rust/res/ui/smudgetimer_ui.xml");
-                let model: gio::MenuModel = builder
-                    .object("main_window_menu")
-                    .expect("Couldn't find 'main_window_menu' in smudgetimer_ui.xml");
-
-                app.set_menubar(Some(&model));
-            }
-
             MainWindow::new(&app);
 
             //register_app_actions(&app);

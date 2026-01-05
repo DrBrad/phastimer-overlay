@@ -10,6 +10,10 @@ gridview child:selected {
 }
 */
 
+#activity_pane {
+    padding: 0 10px 0 10px;
+}
+
 #smudge {
     font-weight: bold;
     font-size: 50px;

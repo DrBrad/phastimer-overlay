@@ -74,18 +74,18 @@ impl MainView {
                 let event = event.as_any().downcast_ref::<TimerEvent>().unwrap();
 
                 if smudge_timer_running.load(Ordering::Relaxed) {
-                    smudge.set_label(&format!("{}", ms_to_hms(event.time - *smudge_now.borrow())));
+                    smudge.set_label(&format!("{}", ms_to_msm(event.time - *smudge_now.borrow())));
                 }
 
-                let elapsed = (event.time - *obombo_now.borrow())/1000;
+                let elapsed = (event.time - *obombo_now.borrow())/10;
+                println!("{elapsed}  {}   {}", event.time, *obombo_now.borrow());
 
                 if obombo_timer_running.load(Ordering::Relaxed) {
-                    if elapsed < 60 {
+                    if elapsed < 6000 {
                         if *obombo_state.borrow() {
                             *obombo_state.borrow_mut() = false;
-                            obombo.set_label("CALM");
                         }
-                    } else if (elapsed - 60) % 120 == 0 {
+                    } else if (elapsed - 6000) % 12000 == 0 {
                         let new_state = !*obombo_state.borrow();
                         *obombo_state.borrow_mut() = new_state;
                         obombo.set_label(if new_state { "AGGRO" } else { "CALM" });
@@ -120,7 +120,7 @@ impl MainView {
                     }
                     Key::Num1 => {
                         smudge_timer_running.store(false, Ordering::Relaxed);
-                        smudge.set_label("00:00");
+                        smudge.set_label("00:00.00");
                     }
                     Key::Num2 => {
                         *obombo_now.borrow_mut() = SystemTime::now()
@@ -128,6 +128,7 @@ impl MainView {
                             .unwrap()
                             .as_millis();
                         obombo_timer_running.store(true, Ordering::Relaxed);
+                        obombo.set_label("CALM");
                     }
                     Key::Num3 => {
                         obombo_timer_running.store(false, Ordering::Relaxed);
@@ -136,7 +137,7 @@ impl MainView {
                     }
                     Key::Num5 => {
                         smudge_timer_running.store(false, Ordering::Relaxed);
-                        smudge.set_label("00:00");
+                        smudge.set_label("00:00.00");
 
                         obombo_timer_running.store(false, Ordering::Relaxed);
                         *obombo_state.borrow_mut() = true;
@@ -211,18 +212,17 @@ impl Stackable for MainView {
     }
 }
 
-#[derive(Default)]
-struct BeatState {
-    last_1s: VecDeque<Instant>,
-    last_5s: VecDeque<Instant>,
-    last_press: Option<Instant>,
-    ema_bps: f64,
-}
+fn ms_to_msm(ms: u128) -> String {
+    let mut total_seconds = ms / 1000;
+    let mut centiseconds = ((ms % 1000) + 5) / 10; // rounded
 
-fn ms_to_hms(ms: u128) -> String {
-    let total_seconds = ms / 1000;
-    let minutes = (total_seconds % 3600) / 60;
+    if centiseconds == 100 {
+        centiseconds = 0;
+        total_seconds += 1;
+    }
+
     let seconds = total_seconds % 60;
+    let minutes = (total_seconds / 60) % 60;
 
-    format!("{:02}:{:02}", minutes, seconds)
+    format!("{:02}:{:02}.{:02}", minutes, seconds, centiseconds)
 }

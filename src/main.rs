@@ -61,7 +61,7 @@ fn main() {
 
     thread::spawn(|| {
         loop {
-            thread::sleep(Duration::from_secs(1));
+            thread::sleep(Duration::from_millis(10));
             let now = SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
