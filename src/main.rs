@@ -46,9 +46,7 @@ fn main() {
             match event.event_type {
                 EventType::KeyPress(_) => {}
                 EventType::KeyRelease(key) => {
-                    match key {
-                        _ => send_event(Box::new(ButtonEvent::new(key)))
-                    }
+                    send_event(Box::new(ButtonEvent::new(key)))
                 }
                 EventType::ButtonPress(_) => {}
                 EventType::ButtonRelease(_) => {}

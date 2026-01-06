@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-    <gresource prefix="/net/ethernaught/rust">
+    <gresource prefix="/smudgetimer/rust">
         <file preprocess="xml-stripblanks">res/ui/smudgetimer_ui.xml</file>
         <file alias="res/ui/title_bar.ui" preprocess="xml-stripblanks">res/ui/gtk4/linux/title_bar.ui</file>
 
