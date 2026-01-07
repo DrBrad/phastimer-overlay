@@ -61,13 +61,13 @@
                                         <property name="visible">True</property>
                                         <property name="orientation">horizontal</property>
                                         <property name="hexpand">True</property>
-                                        <property name="draw-value">False</property>
+                                        <property name="draw-value">True</property>
                                         <property name="round-digits">0</property>
 
                                         <property name="adjustment">
                                             <object class="GtkAdjustment" id="ghost_speed_adj">
                                                 <property name="lower">0</property>
-                                                <property name="upper">5</property>
+                                                <property name="upper">4</property>
                                                 <property name="step-increment">1</property>
                                                 <property name="page-increment">1</property>
                                                 <property name="value">0</property>
@@ -132,7 +132,6 @@
                                     <object class="GtkButton" id="timer_start_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
@@ -180,7 +179,6 @@
                                     <object class="GtkButton" id="timer_reset_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
@@ -228,7 +226,6 @@
                                     <object class="GtkButton" id="obambo_start_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
@@ -276,7 +273,6 @@
                                     <object class="GtkButton" id="obambo_reset_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
@@ -324,7 +320,6 @@
                                     <object class="GtkButton" id="ms_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
@@ -372,7 +367,6 @@
                                     <object class="GtkButton" id="complete_reset_btn">
                                         <property name="name">key_bind</property>
                                         <property name="visible">True</property>
-                                        <property name="label">`</property>
                                     </object>
                                 </child>
                             </object>
