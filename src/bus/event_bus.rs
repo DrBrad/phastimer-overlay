@@ -10,7 +10,7 @@ use gtk::glib;
 #[cfg(feature = "gtk4")]
 use gtk4::glib;
 
-type EventCallback = Box<dyn Fn(&Box<dyn Event>) -> EventPropagation>;
+type EventCallback = Box<dyn Fn(u32, &Box<dyn Event>) -> EventPropagation>;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum EventPropagation {
@@ -29,7 +29,7 @@ thread_local! {
 
 pub fn register_event<F>(event: &str, callback: F, paused: bool) -> u32
 where
-    F: Fn(&Box<dyn Event>) -> EventPropagation + 'static,
+    F: Fn(u32, &Box<dyn Event>) -> EventPropagation + 'static,
 {
     let callback_id = random::r#gen::<u32>();
 
@@ -99,7 +99,7 @@ pub fn send_event(data: Box<dyn Event>) {
 
                 for (key, callback_state) in callbacks.iter() {
                     if !callback_state.paused {
-                        if !(callback_state.callback)(&data).eq(&EventPropagation::Continue) {
+                        if !(callback_state.callback)(*key, &data).eq(&EventPropagation::Continue) {
                             keys_to_remove.push(key.clone());
                         }
                     }

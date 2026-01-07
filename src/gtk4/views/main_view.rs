@@ -19,6 +19,7 @@ use crate::bus::event_bus::EventPropagation::Continue;
 use crate::bus::events::button_event::ButtonEvent;
 use crate::bus::events::timer_event::TimerEvent;
 use crate::gtk4::windows::console_window::ConsoleWindow;
+use crate::settings::{GHOST_SPEED, KEY_MS, KEY_OBAMBO_RESET, KEY_OBAMBO_START, KEY_RESET, KEY_TIMER_RESET, KEY_TIMER_START};
 use crate::utils::bpm::TapState;
 
 pub struct MainView {
@@ -26,7 +27,6 @@ pub struct MainView {
     pub button_event_listener: Option<RefCell<u32>>,
     pub timer_event_listener: Option<RefCell<u32>>
 }
-
 
 impl MainView {
 
@@ -70,16 +70,15 @@ impl MainView {
             let obombo_now = Rc::clone(&obombo_now);
             let obombo_state = Rc::clone(&obombo_state);
 
-            move |event| {
+            move |id, event| {
                 let event = event.as_any().downcast_ref::<TimerEvent>().unwrap();
 
-                if smudge_timer_running.load(Ordering::Relaxed) {
+                if smudge_timer_running.load(Ordering::Relaxed) && event.time >= *smudge_now.borrow() {
                     smudge.set_label(&format!("{}", ms_to_msm(event.time - *smudge_now.borrow())));
                 }
 
-                let elapsed = (event.time - *obombo_now.borrow())/10;
-
-                if obombo_timer_running.load(Ordering::Relaxed) {
+                if obombo_timer_running.load(Ordering::Relaxed) && event.time >= *obombo_now.borrow() {
+                    let elapsed = (event.time - *obombo_now.borrow())/10;
                     if elapsed < 6000 {
                         if *obombo_state.borrow() {
                             *obombo_state.borrow_mut() = false;
@@ -93,8 +92,16 @@ impl MainView {
 
                 Continue
             }
-        }, true)));
-        resume_event("timer_event", timer_event_listener.as_ref().unwrap().borrow().clone());
+        }, false)));
+        //resume_event("timer_event", timer_event_listener.as_ref().unwrap().borrow().clone());
+
+        const SPEEDS: [f64; 5] = [
+            0.5,
+            0.75,
+            1.0,
+            1.25,
+            1.50
+        ];
 
         let button_event_listener = Some(RefCell::new(register_event("button_event", {
             let smudge = smudge.clone();
@@ -102,25 +109,25 @@ impl MainView {
 
             let tap_state = RefCell::new(TapState::default());
 
-            move |event| {
+            move |id, event| unsafe {
                 let event = event.as_any().downcast_ref::<ButtonEvent>().unwrap();
 
                 match event.button {
                     Key::ControlRight => {
                         ConsoleWindow::new();
                     }
-                    Key::BackQuote => {
+                    k if k == KEY_TIMER_START => {
                         *smudge_now.borrow_mut() = SystemTime::now()
                             .duration_since(UNIX_EPOCH)
                             .unwrap()
                             .as_millis();
                         smudge_timer_running.store(true, Ordering::Relaxed);
                     }
-                    Key::Num1 => {
+                    k if k == KEY_TIMER_RESET => {
                         smudge_timer_running.store(false, Ordering::Relaxed);
                         smudge.set_label("00:00.00");
                     }
-                    Key::Num2 => {
+                    k if k == KEY_OBAMBO_START => {
                         *obombo_now.borrow_mut() = SystemTime::now()
                             .duration_since(UNIX_EPOCH)
                             .unwrap()
@@ -128,12 +135,12 @@ impl MainView {
                         obombo_timer_running.store(true, Ordering::Relaxed);
                         obombo.set_label("CALM");
                     }
-                    Key::Num3 => {
+                    k if k == KEY_OBAMBO_RESET => {
                         obombo_timer_running.store(false, Ordering::Relaxed);
                         *obombo_state.borrow_mut() = true;
                         obombo.set_label("NONE");
                     }
-                    Key::Num5 => {
+                    k if k == KEY_RESET => {
                         smudge_timer_running.store(false, Ordering::Relaxed);
                         smudge.set_label("00:00.00");
 
@@ -144,24 +151,21 @@ impl MainView {
                         tap_state.borrow_mut().reset();
                         bps.set_label("0.00 m/s");
                     }
-                    Key::Num4 => {
+                    k if k == KEY_MS => {
                         if let Some((bpm, ms)) = tap_state.borrow_mut().tap_and_compute() {
-                            bps.set_label(&format!("{ms:.2} m/s"));
+                            bps.set_label(&format!("{:.2} m/s", ms*SPEEDS[GHOST_SPEED]));
 
                         } else {
                             bps.set_label("0.00 m/s");
                         }
-                    }
-                    Key::Equal => {
-                        exit(0);
                     }
                     _ => {}
                 }
 
                 Continue
             }
-        }, true)));
-        resume_event("button_event", button_event_listener.as_ref().unwrap().borrow().clone());
+        }, false)));
+        //resume_event("button_event", button_event_listener.as_ref().unwrap().borrow().clone());
 
         Self {
             root,

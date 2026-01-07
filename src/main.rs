@@ -5,6 +5,7 @@ mod bus;
 mod utils;
 mod settings;
 
+use std::process::exit;
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use rdev::{listen, EventType, Key};
@@ -47,6 +48,9 @@ fn main() {
             match event.event_type {
                 EventType::KeyPress(_) => {}
                 EventType::KeyRelease(key) => {
+                    if key == Key::BackSlash {
+                        exit(0);
+                    }
                     send_event(Box::new(ButtonEvent::new(key)))
                 }
                 EventType::ButtonPress(_) => {}
