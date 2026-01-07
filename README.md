@@ -8,10 +8,5 @@ In total this program will help with 4 ghosts.
 KeyBinds:
 | Key  | Description |
 |----|----|
-| \`   | Starts / Restarts smudge timer |
-| 1    | Reset smudge timer |
-| 2    | Starts / Restarts Obambo timer |
-| 3    | Reset Obambo timer |
-| 4    | BPS = Footsteps per second |
-| 5    | Reset smudge and Obambo timer |
-| =    | Kills the program |
+| Right CTRL    | To open settings |
+| \    | Kills the program |
