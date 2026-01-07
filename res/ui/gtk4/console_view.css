@@ -11,6 +11,11 @@
     font-weight: bold;
     font-size: 20px;
     color: @primary;
+    padding: 10px 0;
+}
+
+#setting #header:nth-child(n+2) {
+    margin-top: 10px;
 }
 
 #settings #title {
