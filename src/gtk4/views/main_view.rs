@@ -152,9 +152,12 @@ impl MainView {
                     }
                     k if k == KEY_MS => {
                         if let Some((bpm, mut ms)) = tap_state.borrow_mut().tap_and_compute() {
+                            ms = ms*SPEEDS[GHOST_SPEED];
+
                             if BLOOD_MOON {
-                                ms = ms*SPEEDS[GHOST_SPEED];
+                                ms = ms*0.85;
                             }
+
                             bps.set_label(&format!("{:.2} m/s", ms));
 
                         } else {
