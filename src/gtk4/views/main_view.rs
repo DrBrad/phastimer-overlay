@@ -155,7 +155,7 @@ impl MainView {
                             ms = ms/SPEEDS[GHOST_SPEED];
 
                             if BLOOD_MOON {
-                                ms = ms/1.15;
+                                ms = ms*0.85;
                             }
 
                             bps.set_label(&format!("{:.2} m/s", ms));
