@@ -3,10 +3,13 @@ use std::collections::HashMap;
 use std::process::exit;
 use std::rc::Rc;
 use gdk4_win32::glib::translate::ToGlibPtr;
-use gtk4::{gdk, style_context_add_provider_for_display, Application, ApplicationWindow, Builder, CssProvider, Stack, StackPage};
-use gtk4::prelude::{Cast, GtkWindowExt, ListModelExt, NativeExt, WidgetExt};
+use glib::object::ObjectExt;
+use gtk4::{gdk, style_context_add_provider_for_display, Application, ApplicationWindow, Builder, CssProvider, Stack, StackPage, Widget};
+use gtk4::prelude::{Cast, GtkWindowExt, ListModelExt, NativeExt, StyleContextExt, WidgetExt};
+use crate::gtk4::views::console_view::get_screen_width;
 use crate::gtk4::views::inter::stackable::Stackable;
 use crate::gtk4::views::main_view::MainView;
+use crate::settings::LOCATION;
 
 #[derive(Clone)]
 pub struct MainWindow {
@@ -64,14 +67,45 @@ impl MainWindow {
             }
         });
 
-
-        window.show();
-
-        window.present();
         #[cfg(windows)]
         {
-            force_always_on_top_win32(window.as_ref());
-            win32_move_to_0_0_and_topmost(&window, true);
+            window.connect_map(|window| {
+                let win_weak = window.downgrade();
+
+                glib::idle_add_local(move || {
+                    let Some(window) = win_weak.upgrade() else {
+                        return glib::ControlFlow::Break;
+                    };
+
+                    let w = window.width();
+                    let h = window.height();
+
+                    if w > 0 && h > 0 {
+                        match unsafe { LOCATION } {
+                            1 => {
+                                window.style_context().add_class("left");
+                                window.style_context().add_class("right");
+                                win32_move_to_x_and_topmost(&window, (get_screen_width(&window)-window.allocated_width()) / 2, true)
+                            }
+                            2 => {
+                                window.style_context().remove_class("left");
+                                window.style_context().add_class("right");
+                                win32_move_to_x_and_topmost(&window, get_screen_width(&window)-window.allocated_width(), true)
+                            }
+                            _ => {
+                                window.style_context().remove_class("right");
+                                window.style_context().add_class("left");
+                                win32_move_to_x_and_topmost(&window, 0, true)
+                            }
+                        }
+
+                        glib::ControlFlow::Break
+
+                    } else {
+                        glib::ControlFlow::Continue
+                    }
+                });
+            });
         }
 
         let _self = Self {
@@ -81,6 +115,15 @@ impl MainWindow {
         };
 
         _self.add_view(Box::new(MainView::new(&_self)));
+
+        _self.window.show();
+
+        _self.window.present();
+
+        #[cfg(windows)]
+        {
+            force_always_on_top_win32(_self.window.as_ref());
+        }
 
         _self
     }
@@ -191,7 +234,7 @@ fn force_always_on_top_win32(window: &gtk4::Window) {
 }
 
 #[cfg(windows)]
-pub fn win32_move_to_0_0_and_topmost(window: &gtk4::ApplicationWindow, topmost: bool) {
+pub fn win32_move_to_x_and_topmost(window: &ApplicationWindow, x: i32, topmost: bool) {
     use gtk4::glib::prelude::Cast;
     use gdk4_win32::Win32Surface;
 
@@ -234,7 +277,7 @@ pub fn win32_move_to_0_0_and_topmost(window: &gtk4::ApplicationWindow, topmost: 
         SetWindowPos(
             hwnd as *mut core::ffi::c_void,
             insert_after,
-            0, 0,            // ✅ move to top-left
+            x, 0,            // ✅ move to top-left
             0, 0,
             SWP_NOSIZE | SWP_NOACTIVATE,
         );

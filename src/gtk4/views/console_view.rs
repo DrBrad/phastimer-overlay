@@ -1,9 +1,11 @@
 use std::cell::Cell;
 use std::rc::Rc;
+use gdk4_win32::prelude::{DisplayExt, MonitorExt};
 use glib::Propagation;
-use gtk4::{gdk, style_context_add_provider_for_display, Builder, Button, ComboBoxText, CssProvider, Paned, ScrolledWindow, Switch, Window};
-use gtk4::prelude::{ButtonExt, RangeExt, ScaleExt, WidgetExt};
-use crate::settings::{save_settings, verify_key_bind, BLOOD_MOON, GHOST_SPEED, KEY_MS, KEY_OBAMBO_RESET, KEY_OBAMBO_START, KEY_RESET, KEY_TIMER_RESET, KEY_TIMER_START};
+use gtk4::{gdk, style_context_add_provider_for_display, ApplicationWindow, Builder, Button, ComboBoxText, CssProvider, Paned, ScrolledWindow, Switch, Window};
+use gtk4::prelude::{ButtonExt, NativeExt, RangeExt, ScaleExt, StyleContextExt, WidgetExt};
+use crate::gtk4::windows::main_window::win32_move_to_x_and_topmost;
+use crate::settings::{save_settings, verify_key_bind, BLOOD_MOON, GHOST_SPEED, KEY_MS, KEY_OBAMBO_RESET, KEY_OBAMBO_START, KEY_RESET, KEY_TIMER_RESET, KEY_TIMER_START, LOCATION};
 use crate::utils::keys::gtk4_key_to_key;
 
 pub struct ConsoleView {
@@ -12,7 +14,7 @@ pub struct ConsoleView {
 
 impl ConsoleView {
 
-    pub fn new(window: &Window) -> Self {
+    pub fn new(app_window: &ApplicationWindow, window: &Window) -> Self {
         let builder = Builder::from_resource("/smudgetimer/rust/res/ui/console_view.ui");
 
         let provider = CssProvider::new();
@@ -36,9 +38,12 @@ impl ConsoleView {
             "150%"
         ];
 
-        ghost_speed.set_format_value_func(|_, value| {
+        ghost_speed.set_format_value_func(|_, value| unsafe {
             let idx = value.round().clamp(0.0, 4.0) as usize;
-            unsafe { GHOST_SPEED = idx; }
+            if idx != GHOST_SPEED {
+                GHOST_SPEED = idx;
+            }
+
             SPEED_LABELS[idx].to_string()
         });
 
@@ -52,7 +57,6 @@ impl ConsoleView {
             unsafe { BLOOD_MOON = state; }
             Propagation::Proceed
         });
-
 
         let timer_start_btn: Button = builder
             .object("timer_start_btn")
@@ -189,10 +193,72 @@ impl ConsoleView {
             });
         }
 
+
+
+
+        let location: gtk4::Scale = builder
+            .object("location")
+            .expect("Couldn't find 'location' in console_view.ui");
+        unsafe { location.set_value(LOCATION as f64); }
+
+        const LOCATIONS: [&str; 3] = [
+            "Left",
+            "Top",
+            "Right"
+        ];
+
+        #[cfg(windows)]
+        {
+            location.set_format_value_func({
+                let app_window = app_window.clone();
+
+                move |_, value| unsafe {
+                    let idx = value.round().clamp(0.0, 2.0) as usize;
+
+                    if idx != LOCATION {
+                        LOCATION = idx;
+
+                        match idx {
+                            1 => {
+                                app_window.style_context().add_class("left");
+                                app_window.style_context().add_class("right");
+                                win32_move_to_x_and_topmost(&app_window, (get_screen_width(&app_window)-app_window.allocated_width()) / 2, true)
+                            }
+                            2 => {
+                                app_window.style_context().remove_class("left");
+                                app_window.style_context().add_class("right");
+                                win32_move_to_x_and_topmost(&app_window, get_screen_width(&app_window)-app_window.allocated_width(), true)
+                            }
+                            _ => {
+                                app_window.style_context().remove_class("right");
+                                app_window.style_context().add_class("left");
+                                win32_move_to_x_and_topmost(&app_window, 0, true)
+                            }
+                        }
+
+                        println!("{:?}", save_settings());
+                    }
+
+                    LOCATIONS[idx].to_string()
+                }
+            });
+        }
+
+
         window.add_controller(controller);
 
         Self {
             root
         }
     }
+}
+
+pub fn get_screen_width(window: &ApplicationWindow) -> i32 {
+    let display = window.display();
+    let surface = window.surface().expect("Window not realized yet");
+    let monitor = display.monitor_at_surface(&surface)
+        .expect("No monitor found");
+
+    let geometry = monitor.geometry();
+    geometry.width()
 }

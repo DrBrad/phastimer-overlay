@@ -11,6 +11,7 @@ pub static mut KEY_OBAMBO_START: Key = Key::Num3;
 pub static mut KEY_OBAMBO_RESET: Key = Key::Num4;
 pub static mut KEY_MS: Key = Key::Num5;
 pub static mut KEY_RESET: Key = Key::Num0;
+pub static mut LOCATION: usize = 0;
 
 pub unsafe fn load_settings() {
     let path = config_path();
@@ -35,6 +36,7 @@ pub unsafe fn load_settings() {
             "key_obambo_reset" => KEY_OBAMBO_RESET = str_to_key(v),
             "key_ms" => KEY_MS = str_to_key(v),
             "key_reset" => KEY_RESET = str_to_key(v),
+            "location" => LOCATION = v.parse().unwrap(),
             _ => {}
         }
     }
@@ -52,13 +54,15 @@ pub unsafe fn save_settings() -> io::Result<()> {
              key_obambo_start={:?}\n\
              key_obambo_reset={:?}\n\
              key_ms={:?}\n\
-             key_reset={:?}\n",
+             key_reset={:?}\n\
+             location={}",
         *&raw const KEY_TIMER_START,
         *&raw const KEY_TIMER_RESET,
         *&raw const KEY_OBAMBO_START,
         *&raw const KEY_OBAMBO_RESET,
         *&raw const KEY_MS,
-        *&raw const KEY_RESET
+        *&raw const KEY_RESET,
+        *&raw const LOCATION
     );
 
     fs::write(path, contents)

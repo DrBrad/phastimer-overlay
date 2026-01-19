@@ -26,14 +26,6 @@ rustup install nightly
 rustup override set nightly
 */
 
-//NOTES
-//NORMAL BLINKS - NOT (Oni, Phantom, Deogen, Obake)
-//FAST - (Twin, Moroi, Revenant, Thaye)
-//SLOW - (Jinn, Deogen)
-//LOS - NOT (Deogen, Hantu, Revenant, and Thaye)
-//
-
-
 /*
 cargo build --release
 powershell -ExecutionPolicy Bypass -File tools\package.ps1
@@ -41,8 +33,6 @@ powershell -ExecutionPolicy Bypass -File tools\package.ps1
 $env:PATH="C:\Windows\System32;C:\Windows"
 Start-Process -FilePath .\target\release\smudge-timer.exe
 */
-
-
 
 fn main() {
     unsafe { load_settings(); }

@@ -9,12 +9,12 @@ pub struct ConsoleWindow {
 
 impl ConsoleWindow {
 
-    pub fn new() -> Self {
+    pub fn new(app_window: &ApplicationWindow) -> Self {
         let window = Window::new();
         window.set_title(Some("SmudgeTimer"));
         window.set_default_size(1200, 700);
 
-        let view = ConsoleView::new(&window);
+        let view = ConsoleView::new(app_window, &window);
 
         window.set_child(Some(&view.root));
         window.show();

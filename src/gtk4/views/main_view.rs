@@ -105,6 +105,7 @@ impl MainView {
         let button_event_listener = Some(RefCell::new(register_event("button_event", {
             let smudge = smudge.clone();
             let obombo = obombo.clone();
+            let window = window.window.clone();
 
             let tap_state = RefCell::new(TapState::default());
 
@@ -113,7 +114,7 @@ impl MainView {
 
                 match event.button {
                     Key::ControlRight => {
-                        ConsoleWindow::new();
+                        ConsoleWindow::new(&window);
                     }
                     k if k == KEY_TIMER_START => {
                         *smudge_now.borrow_mut() = SystemTime::now()
