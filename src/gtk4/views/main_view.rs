@@ -31,10 +31,10 @@ pub struct MainView {
 impl MainView {
 
     pub fn new(window: &MainWindow) -> Self {
-        let builder = Builder::from_resource("/smudgetimer/rust/res/ui/main_view.ui");
+        let builder = Builder::from_resource("/phastimer/rust/res/ui/main_view.ui");
 
         let provider = CssProvider::new();
-        provider.load_from_resource("/smudgetimer/rust/res/ui/main_view.css");
+        provider.load_from_resource("/phastimer/rust/res/ui/main_view.css");
         style_context_add_provider_for_display(&gdk::Display::default().unwrap(), &provider, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
         let root: gtk4::Box = builder

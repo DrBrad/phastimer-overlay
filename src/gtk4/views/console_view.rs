@@ -15,10 +15,10 @@ pub struct ConsoleView {
 impl ConsoleView {
 
     pub fn new(app_window: &ApplicationWindow, window: &Window) -> Self {
-        let builder = Builder::from_resource("/smudgetimer/rust/res/ui/console_view.ui");
+        let builder = Builder::from_resource("/phastimer/rust/res/ui/console_view.ui");
 
         let provider = CssProvider::new();
-        provider.load_from_resource("/smudgetimer/rust/res/ui/console_view.css");
+        provider.load_from_resource("/phastimer/rust/res/ui/console_view.css");
         style_context_add_provider_for_display(&gdk::Display::default().unwrap(), &provider, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
         let root: gtk4::Box = builder

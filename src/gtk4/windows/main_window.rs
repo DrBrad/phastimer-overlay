@@ -4,7 +4,7 @@ use std::process::exit;
 use std::rc::Rc;
 use gdk4_win32::glib::translate::ToGlibPtr;
 use glib::object::ObjectExt;
-use gtk4::{gdk, style_context_add_provider_for_display, Application, ApplicationWindow, Builder, CssProvider, Stack, StackPage, Widget};
+use gtk4::{gdk, style_context_add_provider_for_display, Application, ApplicationWindow, Builder, CssProvider, Stack, StackPage};
 use gtk4::prelude::{Cast, GtkWindowExt, ListModelExt, NativeExt, StyleContextExt, WidgetExt};
 use crate::gtk4::views::console_view::get_screen_width;
 use crate::gtk4::views::inter::stackable::Stackable;
@@ -21,10 +21,10 @@ pub struct MainWindow {
 impl MainWindow {
 
     pub fn new(app: &Application) -> Self {
-        let builder = Builder::from_resource("/smudgetimer/rust/res/ui/window.ui");
+        let builder = Builder::from_resource("/phastimer/rust/res/ui/window.ui");
 
         let provider = CssProvider::new();
-        provider.load_from_resource("/smudgetimer/rust/res/ui/window.css");
+        provider.load_from_resource("/phastimer/rust/res/ui/window.css");
 
         style_context_add_provider_for_display(&gdk::Display::default().unwrap(), &provider, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
@@ -35,6 +35,7 @@ impl MainWindow {
         window.set_application(Some(app));
         window.connect_destroy(|_| exit(0));
         window.set_decorated(false);
+
 
         //window.set_border_width(1);
 

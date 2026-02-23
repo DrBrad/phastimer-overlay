@@ -1,5 +1,5 @@
 param(
-  [string]$AppName   = "smudge-timer",
+  [string]$AppName   = "phastimer",
   [string]$MingwRoot = "C:\msys64\mingw64",
   [string]$Out       = "dist"
 )
@@ -85,4 +85,4 @@ Write-Host "Test like a clean PC:"
 Write-Host "  `$env:PATH='C:\Windows\System32;C:\Windows'"
 Write-Host "  Start-Process -WorkingDirectory '$Out' -FilePath '$Out\$AppName.exe'"
 
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ".\smudge-timer.iss"
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ".\phastimer.iss"

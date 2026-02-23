@@ -5,8 +5,9 @@ mod bus;
 mod utils;
 mod settings;
 
-use std::process::exit;
-use std::thread;
+use std::path::PathBuf;
+use std::process::{exit, Command};
+use std::{env, thread};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use rdev::{listen, EventType, Key};
 use crate::bus::event_bus::send_event;
@@ -31,7 +32,7 @@ cargo build --release
 powershell -ExecutionPolicy Bypass -File tools\package.ps1
 
 $env:PATH="C:\Windows\System32;C:\Windows"
-Start-Process -FilePath .\target\release\smudge-timer.exe
+Start-Process -FilePath .\target\release\phastimer.exe
 */
 
 fn main() {

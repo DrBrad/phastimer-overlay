@@ -70,11 +70,11 @@ pub unsafe fn save_settings() -> io::Result<()> {
 
 fn config_path() -> PathBuf {
     if let Ok(appdata) = std::env::var("APPDATA") {
-        return PathBuf::from(appdata).join("SmudgeTimer").join("config.ini");
+        return PathBuf::from(appdata).join("PhasTimer").join("config.ini");
     }
 
     if let Ok(home) = std::env::var("HOME") {
-        return PathBuf::from(home).join(".config").join("smudgetimer").join("config.ini");
+        return PathBuf::from(home).join(".config").join("phastimer").join("config.ini");
     }
 
     PathBuf::from("config.ini")

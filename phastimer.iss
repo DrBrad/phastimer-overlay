@@ -1,10 +1,10 @@
-; installer\smudge-timer.iss
+; installer\phastimer.iss
 
-#define MyAppName "Smudge Timer"
-#define MyAppExeName "smudge-timer.exe"
+#define MyAppName "PhasTimer"
+#define MyAppExeName "phastimer.exe"
 #define MyAppVersion "0.1.0"
 #define MyAppPublisher "Brad Eagle"
-#define MyAppURL "https://example.com"  ; optional
+#define MyAppURL "https://phastimer.com"  ; optional
 #define MyDistDir "dist"
 
 [Setup]
@@ -16,16 +16,16 @@ AppPublisherURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=..\out
-OutputBaseFilename=SmudgeTimer-Setup-{#MyAppVersion}
+OutputDir=out
+OutputBaseFilename=PhasTimer-Setup-{#MyAppVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 
 ; If you have an icon, set it here
-; SetupIconFile=..\assets\app.ico
+SetupIconFile=res\icons\icon.ico
 
-UninstallDisplayIcon={app}\{#MyAppExeName}
+UninstallDisplayIcon={app}\icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -35,11 +35,12 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 
 [Files]
 ; Copy EVERYTHING from dist into the install directory
+Source: "res\icons\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#MyDistDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\icon.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\icon.ico"
 
 [Run]
 ; Launch after install

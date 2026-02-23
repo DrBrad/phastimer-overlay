@@ -11,7 +11,7 @@ pub struct App {
 impl App {
 
     pub fn new() -> Self {
-        let app = Application::new(Some("smudgetimer.rust"), ApplicationFlags::HANDLES_OPEN);
+        let app = Application::new(Some("phastimer.rust"), ApplicationFlags::HANDLES_OPEN);
 
         Self {
             app
@@ -31,11 +31,11 @@ impl App {
 
 
             let provider = CssProvider::new();
-            provider.load_from_resource("/smudgetimer/rust/res/ui/theme.css");
+            provider.load_from_resource("/phastimer/rust/res/ui/theme.css");
 
             style_context_add_provider_for_display(&gdk::Display::default().unwrap(), &provider, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            //provider.load_from_resource("/smudgetimer/rust/res/ui/theme.css");
+            //provider.load_from_resource("/phastimer/rust/res/ui/theme.css");
 
             MainWindow::new(&app);
 
