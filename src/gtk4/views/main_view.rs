@@ -14,6 +14,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use glib::clone::Downgrade;
+use glib::Propagation;
 use rdev::{listen, EventType, Key};
 use crate::bus::event_bus::{pause_event, register_event, resume_event, unregister_event};
 use crate::bus::event_bus::EventPropagation::Continue;
@@ -122,7 +123,16 @@ impl MainView {
                             return Continue;
                         }
 
-                        *console_window.borrow_mut() = Some(ConsoleWindow::new(&window));
+                        let console_wndw = ConsoleWindow::new(&window);
+                        console_wndw.window.connect_close_request({
+                            let console_window = console_window.clone();
+                            move |_| {
+                                *console_window.borrow_mut() = None::<ConsoleWindow>;
+                                Propagation::Proceed
+                            }
+                        });
+
+                        *console_window.borrow_mut() = Some(console_wndw);
                     }
                     k if k == KEY_TIMER_START => {
                         *smudge_now.borrow_mut() = SystemTime::now()
