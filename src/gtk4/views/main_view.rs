@@ -1,7 +1,7 @@
 use std::rc::Rc;
-use gtk4::{gdk, style_context_add_provider_for_display, Builder, CssProvider, GestureClick, GridView, Label, ListItem, MultiSelection, NoSelection, Orientation, SignalListItemFactory, SingleSelection, StringObject, Widget};
+use gtk4::{gdk, style_context_add_provider_for_display, ApplicationWindow, Builder, CssProvider, GestureClick, GridView, Label, ListItem, MultiSelection, NoSelection, Orientation, SignalListItemFactory, SingleSelection, StringObject, Widget, Window};
 use gtk4::gio::ListStore;
-use gtk4::prelude::{BoxExt, Cast, EventControllerExt, GestureSingleExt, ListItemExt, ListModelExt, SelectionModelExt, StaticType, WidgetExt};
+use gtk4::prelude::{BoxExt, Cast, EventControllerExt, GestureSingleExt, GtkWindowExt, ListItemExt, ListModelExt, SelectionModelExt, StaticType, WidgetExt};
 use crate::gtk4::views::inter::stackable::Stackable;
 use crate::gtk4::windows::main_window::MainWindow;
 
@@ -13,6 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use glib::clone::Downgrade;
 use rdev::{listen, EventType, Key};
 use crate::bus::event_bus::{pause_event, register_event, resume_event, unregister_event};
 use crate::bus::event_bus::EventPropagation::Continue;
@@ -106,6 +107,7 @@ impl MainView {
             let smudge = smudge.clone();
             let obombo = obombo.clone();
             let window = window.window.clone();
+            let console_window = Rc::new(RefCell::new(None::<ConsoleWindow>));;
 
             let tap_state = RefCell::new(TapState::default());
 
@@ -114,7 +116,13 @@ impl MainView {
 
                 match event.button {
                     Key::ControlRight => {
-                        ConsoleWindow::new(&window);
+                        if let Some(weak) = console_window.borrow().as_ref() {
+                            weak.window.present();
+                            weak.window.grab_focus();
+                            return Continue;
+                        }
+
+                        *console_window.borrow_mut() = Some(ConsoleWindow::new(&window));
                     }
                     k if k == KEY_TIMER_START => {
                         *smudge_now.borrow_mut() = SystemTime::now()
